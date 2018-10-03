@@ -1,0 +1,8 @@
+for i in *.fastq; do 
+ (echo "id"$'\t'"$i";
+ awk 'NR%4==2{ORS="\t"; print $0} NR%4==0{ORS="\n"; print $0}' $i|
+  awk -F'\t' '$2!~"[^?-I]"{print $1}'|
+   awk '{cnt[$0]++} END{PROCINFO["sorted_in"]="@val_num_desc"; for(i in cnt){print i"\t"cnt[i]}}')  > $i.q30.txt
+done
+merge_table.pl -k *.fastq.q30.txt|sed 's/\t\t/\t0\t/g; s/\t\t/\t0\t/g; s/\t$/\t0/' > result.txt
+
